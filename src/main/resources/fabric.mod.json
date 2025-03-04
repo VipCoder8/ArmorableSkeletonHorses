@@ -15,7 +15,7 @@
 	"icon": "assets/armorable-skeleton-horses/icon.png",
 	"environment": "*",
 	"entrypoints": {
-		"main": [
+		"client": [
 			"net.vipryx.ArmorableSkeletonHorses"
 		]
 	},
