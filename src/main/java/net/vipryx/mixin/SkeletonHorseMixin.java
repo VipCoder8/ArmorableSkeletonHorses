@@ -33,19 +33,17 @@ public abstract class SkeletonHorseMixin extends AbstractHorseEntity {
     @Override
     public void onInventoryChanged(Inventory sender) {
         super.onInventoryChanged(sender);
-        if(this.getFirstPassenger() instanceof PlayerEntity player) {
-            ItemStack armorStack = this.items.getStack(1);
-            if(SkeletonHorseMixin.this.items.getStack(1) == ItemStack.EMPTY) {
-                SkeletonHorseMixin.this.equipStack(EquipmentSlot.LEGS, ItemStack.EMPTY);
-            }
-            if(armorStack == null || !ArmorCheck.isHorseArmor(armorStack)) {
-                return;
-            }
-            if(SkeletonHorseMixin.this.items.getStack(1).getItem() instanceof HorseArmorItem) {
-                SkeletonHorseMixin.this.equipStack(EquipmentSlot.LEGS, SkeletonHorseMixin.this.items.getStack(1));
-            }
-            this.getAttributeInstance(EntityAttributes.GENERIC_ARMOR).setBaseValue(((HorseArmorItem)armorStack.getItem()).getBonus());
+        ItemStack armorStack = this.items.getStack(1);
+        if (SkeletonHorseMixin.this.items.getStack(1) == ItemStack.EMPTY) {
+            SkeletonHorseMixin.this.equipStack(EquipmentSlot.LEGS, ItemStack.EMPTY);
         }
+        if (armorStack == null || !ArmorCheck.isHorseArmor(armorStack)) {
+            return;
+        }
+        if (SkeletonHorseMixin.this.items.getStack(1).getItem() instanceof HorseArmorItem) {
+            SkeletonHorseMixin.this.equipStack(EquipmentSlot.LEGS, SkeletonHorseMixin.this.items.getStack(1));
+        }
+        this.getAttributeInstance(EntityAttributes.GENERIC_ARMOR).setBaseValue(((HorseArmorItem) armorStack.getItem()).getBonus());
     }
 
     @Inject(at = @At("RETURN"), method = "writeCustomDataToNbt")
