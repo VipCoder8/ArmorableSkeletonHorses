@@ -7,7 +7,6 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.mob.SkeletonHorseEntity;
 import net.minecraft.entity.passive.AbstractHorseEntity;
-import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.HorseArmorItem;
 import net.minecraft.item.ItemStack;
@@ -60,6 +59,7 @@ public abstract class SkeletonHorseMixin extends AbstractHorseEntity {
             if (!itemStack.isEmpty() && this.isHorseArmor(itemStack)) {
                 this.getAttributeInstance(EntityAttributes.GENERIC_ARMOR).setBaseValue(((HorseArmorItem)itemStack.getItem()).getBonus());
                 this.equipStack(EquipmentSlot.LEGS, itemStack);
+                this.items.setStack(1, itemStack);
             }
         }
     }
