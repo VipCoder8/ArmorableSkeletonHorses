@@ -1,0 +1,14 @@
+{
+  "required": true,
+  "package": "net.vipryx.mixin",
+  "compatibilityLevel": "JAVA_17",
+  "mixins": [
+    "AbstractHorseEntityMixin",
+    "SkeletonHorseMixin"
+  ],
+  "injectors": {
+    "defaultRequire": 1
+  },
+  "client": [
+  ]
+}
