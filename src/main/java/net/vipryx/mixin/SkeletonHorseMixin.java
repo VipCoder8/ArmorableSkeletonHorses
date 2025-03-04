@@ -7,18 +7,23 @@ import net.minecraft.entity.LivingEntity;
 import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.mob.SkeletonHorseEntity;
 import net.minecraft.entity.passive.AbstractHorseEntity;
+import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.HorseArmorItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.sound.SoundEvent;
+import net.minecraft.util.ActionResult;
+import net.minecraft.util.Hand;
 import net.minecraft.world.World;
 import net.vipryx.ArmorCheck;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
+import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
+import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
@@ -33,25 +38,43 @@ public abstract class SkeletonHorseMixin extends AbstractHorseEntity {
     public void onInventoryChanged(Inventory sender) {
         super.onInventoryChanged(sender);
         ItemStack armorStack = this.items.getStack(1);
-        if (SkeletonHorseMixin.this.items.getStack(1) == ItemStack.EMPTY) {
+        if (armorStack == ItemStack.EMPTY) {
             SkeletonHorseMixin.this.equipStack(EquipmentSlot.LEGS, ItemStack.EMPTY);
         }
         if (armorStack == null || !ArmorCheck.isHorseArmor(armorStack)) {
             return;
         }
-        if (SkeletonHorseMixin.this.items.getStack(1).getItem() instanceof HorseArmorItem) {
-            SkeletonHorseMixin.this.equipStack(EquipmentSlot.LEGS, SkeletonHorseMixin.this.items.getStack(1));
+        if (armorStack.getItem() instanceof HorseArmorItem) {
+            SkeletonHorseMixin.this.equipStack(EquipmentSlot.LEGS, armorStack);
         }
         this.getAttributeInstance(EntityAttributes.GENERIC_ARMOR).setBaseValue(((HorseArmorItem) armorStack.getItem()).getBonus());
     }
 
+    @Unique
+    @Inject(at = @At("HEAD"), method = "interactMob", cancellable = true)
+    public void interactMob(PlayerEntity player, Hand hand, CallbackInfoReturnable<ActionResult> cir) {
+        if(this.getFirstPassenger() == null) {
+            if(player.getStackInHand(hand) != ItemStack.EMPTY && player.getStackInHand(hand).getItem() instanceof HorseArmorItem) {
+                ItemStack handItem = player.getStackInHand(hand);
+                ItemStack currentHorseArmor = this.items.getStack(1);
+
+                this.items.setStack(1, handItem);
+                this.onInventoryChanged(player.getInventory());
+                player.setStackInHand(hand, currentHorseArmor);
+
+                cir.setReturnValue(ActionResult.SUCCESS);
+            }
+        }
+    }
+
+    @Unique
     @Inject(at = @At("RETURN"), method = "writeCustomDataToNbt")
     public void saveArmor(NbtCompound nbt, CallbackInfo ci) {
         if(this.items.getStack(1) != ItemStack.EMPTY) {
             nbt.put("Armor", items.getStack(1).writeNbt(new NbtCompound()));
         }
     }
-
+    @Unique
     @Inject(at = @At("RETURN"), method = "readCustomDataFromNbt")
     public void readArmor(NbtCompound nbt, CallbackInfo ci) {
         if (nbt.contains("Armor", 10)) {
