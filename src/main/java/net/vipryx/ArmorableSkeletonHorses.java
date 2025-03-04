@@ -7,8 +7,6 @@ import net.minecraft.entity.EntityType;
 import net.vipryx.renderers.SkeletonHorseArmorRenderer;
 
 public class ArmorableSkeletonHorses implements ModInitializer {
-	public static final String MOD_ID = "template-mod";
-
 	@Override
 	public void onInitialize() {
 		EntityRendererRegistry.register(EntityType.SKELETON_HORSE, (EntityRendererFactory.Context ctx) ->
