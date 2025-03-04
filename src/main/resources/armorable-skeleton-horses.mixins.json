@@ -11,5 +11,8 @@
     "defaultRequire": 1
   },
   "client": [
+    "AbstractHorseEntityMixin",
+    "MobEntityMixin",
+    "SkeletonHorseMixin"
   ]
 }
