@@ -49,7 +49,6 @@ public abstract class SkeletonHorseMixin extends AbstractHorseEntity {
         }
         this.getAttributeInstance(EntityAttributes.GENERIC_ARMOR).setBaseValue(((HorseArmorItem) armorStack.getItem()).getBonus());
     }
-    
     @Unique
     @Inject(at = @At("HEAD"), method = "interactMob", cancellable = true)
     public void interactMob(PlayerEntity player, Hand hand, CallbackInfoReturnable<ActionResult> cir) {
