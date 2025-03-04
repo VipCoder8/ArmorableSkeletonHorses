@@ -1,22 +1,22 @@
 {
 	"schemaVersion": 1,
-	"id": "armorable-undeads",
+	"id": "armorable-skeleton-horses",
 	"version": "${version}",
-	"name": "Amorable Undeads",
+	"name": "Armorable Skeleton Horses",
 	"description": "This mod allows equipping armor on skeleton horses.",
 	"authors": [
 		"Vipryx"
 	],
 	"contact": {
 		"homepage": "https://fabricmc.net/",
-		"sources": "https://github.com/VipCoder8/ArmorableUndeads"
+		"sources": "https://github.com/VipCoder8/ArmorableSkeletonHorses"
 	},
-	"license": "CC0-1.0",
-	"icon": "assets/template-mod/icon.png",
+	"license": "ARR",
+	"icon": "assets/armorable-skeleton-horses/icon.png",
 	"environment": "*",
 	"entrypoints": {
 		"main": [
-          "net.vipryx.ArmorableUndeads"
+			"net.vipryx.ArmorableSkeletonHorses"
 		]
 	},
 	"mixins": [

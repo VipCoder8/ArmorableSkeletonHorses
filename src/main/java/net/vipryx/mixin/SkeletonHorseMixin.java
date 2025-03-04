@@ -13,7 +13,6 @@ import net.minecraft.item.HorseArmorItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.sound.SoundEvent;
-import net.minecraft.world.EntityView;
 import net.minecraft.world.World;
 import net.vipryx.ArmorCheck;
 import org.jetbrains.annotations.Nullable;
@@ -26,7 +25,7 @@ import java.util.function.Supplier;
 import java.util.function.UnaryOperator;
 
 @Mixin(SkeletonHorseEntity.class)
-public class SkeletonHorseMixin extends AbstractHorseEntity {
+public abstract class SkeletonHorseMixin extends AbstractHorseEntity {
     protected SkeletonHorseMixin(EntityType<? extends AbstractHorseEntity> entityType, World world) {
         super(entityType, world);
     }
@@ -36,19 +35,19 @@ public class SkeletonHorseMixin extends AbstractHorseEntity {
         super.onInventoryChanged(sender);
         if(this.getFirstPassenger() instanceof PlayerEntity player) {
             ItemStack armorStack = this.items.getStack(1);
+            if(SkeletonHorseMixin.this.items.getStack(1) == ItemStack.EMPTY) {
+                SkeletonHorseMixin.this.equipStack(EquipmentSlot.LEGS, ItemStack.EMPTY);
+            }
             if(armorStack == null || !ArmorCheck.isHorseArmor(armorStack)) {
                 return;
             }
-            if(!ArmorCheck.isHorseArmor(armorStack)) {
-                return;
-            }
-            if(player.currentScreenHandler.getSlot(1).getStack().getItem() instanceof HorseArmorItem) {
-                this.equipStack(EquipmentSlot.LEGS, player.currentScreenHandler.getSlot(1).getStack());
+            if(SkeletonHorseMixin.this.items.getStack(1).getItem() instanceof HorseArmorItem) {
+                SkeletonHorseMixin.this.equipStack(EquipmentSlot.LEGS, SkeletonHorseMixin.this.items.getStack(1));
             }
             this.getAttributeInstance(EntityAttributes.GENERIC_ARMOR).setBaseValue(((HorseArmorItem)armorStack.getItem()).getBonus());
         }
     }
-    
+
     @Inject(at = @At("RETURN"), method = "writeCustomDataToNbt")
     public void saveArmor(NbtCompound nbt, CallbackInfo ci) {
         if(this.items.getStack(1) != ItemStack.EMPTY) {
@@ -63,7 +62,6 @@ public class SkeletonHorseMixin extends AbstractHorseEntity {
             if (!itemStack.isEmpty() && this.isHorseArmor(itemStack)) {
                 this.getAttributeInstance(EntityAttributes.GENERIC_ARMOR).setBaseValue(((HorseArmorItem)itemStack.getItem()).getBonus());
                 this.equipStack(EquipmentSlot.LEGS, itemStack);
-                this.items.setStack(1, itemStack);
             }
         }
     }
@@ -82,11 +80,6 @@ public class SkeletonHorseMixin extends AbstractHorseEntity {
     @Override
     public boolean cannotBeSilenced() {
         return super.cannotBeSilenced();
-    }
-
-    @Override
-    public EntityView method_48926() {
-        return null;
     }
 
     @Override

@@ -6,7 +6,7 @@ import net.minecraft.client.render.entity.EntityRendererFactory;
 import net.minecraft.entity.EntityType;
 import net.vipryx.renderers.SkeletonHorseArmorRenderer;
 
-public class ArmorableUndeads implements ModInitializer {
+public class ArmorableSkeletonHorses implements ModInitializer {
 	public static final String MOD_ID = "template-mod";
 
 	@Override

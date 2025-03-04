@@ -20,6 +20,6 @@ public class AbstractHorseEntityMixin {
     }
     @Inject(at = @At("RETURN"), method = "equipHorseArmor")
     public void equip(PlayerEntity player, ItemStack stack, CallbackInfo ci) {
-        System.out.println("CALLED");
+
     }
 }

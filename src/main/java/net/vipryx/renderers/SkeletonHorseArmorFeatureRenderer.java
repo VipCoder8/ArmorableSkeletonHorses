@@ -15,6 +15,7 @@ import net.minecraft.entity.mob.SkeletonHorseEntity;
 import net.minecraft.item.DyeableHorseArmorItem;
 import net.minecraft.item.HorseArmorItem;
 import net.minecraft.item.ItemStack;
+import net.vipryx.mixin.MobEntityMixin;
 
 public class SkeletonHorseArmorFeatureRenderer extends FeatureRenderer<SkeletonHorseEntity, HorseEntityModel<SkeletonHorseEntity>> {
     private final HorseEntityModel<SkeletonHorseEntity> armorModel;
