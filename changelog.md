@@ -1,0 +1,3 @@
+- Update Logo
+- Set version to >=1.20
+- Update homepage for fabric.mod.json
