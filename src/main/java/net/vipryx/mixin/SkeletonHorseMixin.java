@@ -8,7 +8,7 @@ import net.minecraft.entity.mob.SkeletonHorseEntity;
 import net.minecraft.entity.passive.AbstractHorseEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
-import net.minecraft.item.AnimalArmorItem;
+import net.minecraft.item.HorseArmorItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.sound.SoundEvent;
@@ -27,7 +27,6 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(SkeletonHorseEntity.class)
 public abstract class SkeletonHorseMixin extends AbstractHorseEntity {
-    @Shadow protected abstract void playJumpSound();
 
     protected SkeletonHorseMixin(EntityType<? extends AbstractHorseEntity> entityType, World world) {
         super(entityType, world);
@@ -37,11 +36,17 @@ public abstract class SkeletonHorseMixin extends AbstractHorseEntity {
     public void onInventoryChanged(Inventory sender) {
         super.onInventoryChanged(sender);
         if(!this.isBaby()) {
-            ItemStack armorStack = this.getBodyArmor();
+            ItemStack armorStack = this.items.getStack(1);
+            if (armorStack == ItemStack.EMPTY) {
+                SkeletonHorseMixin.this.equipStack(EquipmentSlot.LEGS, ItemStack.EMPTY);
+            }
             if (armorStack == null || !ArmorCheck.isHorseArmor(armorStack)) {
                 return;
             }
-            this.getAttributeInstance(EntityAttributes.GENERIC_ARMOR).setBaseValue(((AnimalArmorItem) armorStack.getItem()).getProtection());
+            if (armorStack.getItem() instanceof HorseArmorItem) {
+                SkeletonHorseMixin.this.equipStack(EquipmentSlot.LEGS, armorStack);
+            }
+            this.getAttributeInstance(EntityAttributes.GENERIC_ARMOR).setBaseValue(((HorseArmorItem) armorStack.getItem()).getBonus());
         }
     }
 
@@ -50,11 +55,11 @@ public abstract class SkeletonHorseMixin extends AbstractHorseEntity {
     public void interactMob(PlayerEntity player, Hand hand, CallbackInfoReturnable<ActionResult> cir) {
         if(!isBaby()) {
             if(this.getFirstPassenger() == null) {
-                if(player.getStackInHand(hand) != ItemStack.EMPTY && player.getStackInHand(hand).getItem() instanceof AnimalArmorItem) {
+                if(player.getStackInHand(hand) != ItemStack.EMPTY && player.getStackInHand(hand).getItem() instanceof HorseArmorItem) {
                     ItemStack handItem = player.getStackInHand(hand);
-                    ItemStack currentHorseArmor = this.getBodyArmor();
+                    ItemStack currentHorseArmor = this.items.getStack(1);
 
-                    this.equipBodyArmor(handItem);
+                    this.items.setStack(1, handItem);
                     this.onInventoryChanged(player.getInventory());
                     player.setStackInHand(hand, currentHorseArmor);
 
@@ -68,7 +73,7 @@ public abstract class SkeletonHorseMixin extends AbstractHorseEntity {
     @Inject(at = @At("RETURN"), method = "writeCustomDataToNbt")
     public void saveArmor(NbtCompound nbt, CallbackInfo ci) {
         if(this.items.getStack(1) != ItemStack.EMPTY) {
-            nbt.put("Armor", items.getStack(1).encode(this.getRegistryManager()));
+            nbt.put("Armor", items.getStack(1).writeNbt(new NbtCompound()));
         }
     }
     @Unique
@@ -77,7 +82,7 @@ public abstract class SkeletonHorseMixin extends AbstractHorseEntity {
         if (nbt.contains("Armor", 10)) {
             ItemStack itemStack = ItemStack.fromNbt(this.getRegistryManager(), nbt.getCompound("Armor")).orElse(ItemStack.EMPTY);
             if (!itemStack.isEmpty() && this.isHorseArmor(itemStack)) {
-                this.getAttributeInstance(EntityAttributes.GENERIC_ARMOR).setBaseValue(((AnimalArmorItem)itemStack.getItem()).getProtection());
+                this.getAttributeInstance(EntityAttributes.GENERIC_ARMOR).setBaseValue(((HorseArmorItem)itemStack.getItem()).getBonus());
                 this.equipStack(EquipmentSlot.LEGS, itemStack);
                 this.items.setStack(1, itemStack);
             }
