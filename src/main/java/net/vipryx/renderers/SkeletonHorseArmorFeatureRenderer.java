@@ -15,6 +15,7 @@ import net.minecraft.entity.mob.SkeletonHorseEntity;
 import net.minecraft.item.DyeableHorseArmorItem;
 import net.minecraft.item.HorseArmorItem;
 import net.minecraft.item.ItemStack;
+import net.minecraft.util.math.ColorHelper;
 
 public class SkeletonHorseArmorFeatureRenderer extends FeatureRenderer<SkeletonHorseEntity, HorseEntityModel<SkeletonHorseEntity>> {
     private final HorseEntityModel<SkeletonHorseEntity> armorModel;
@@ -37,11 +38,11 @@ public class SkeletonHorseArmorFeatureRenderer extends FeatureRenderer<SkeletonH
             float n;
             float o;
             float p;
-            if (horseArmorItem instanceof DyeableHorseArmorItem) {
+            if (itemStack.getItem() instanceof DyeableHorseArmorItem) {
                 int m = ((DyeableHorseArmorItem)horseArmorItem).getColor(itemStack);
-                n = (float)(m >> 16 & 255) / 255.0F;
-                o = (float)(m >> 8 & 255) / 255.0F;
-                p = (float)(m & 255) / 255.0F;
+                n = (float) ColorHelper.Argb.getRed(m) / 255.0F;
+                o = (float) ColorHelper.Argb.getGreen(m) / 255.0F;
+                p = (float) ColorHelper.Argb.getBlue(m) / 255.0F;
             } else {
                 n = 1.0F;
                 o = 1.0F;
