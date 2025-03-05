@@ -8,7 +8,7 @@ import net.minecraft.entity.mob.SkeletonHorseEntity;
 import net.minecraft.entity.passive.AbstractHorseEntity;
 import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
-import net.minecraft.item.HorseArmorItem;
+import net.minecraft.item.AnimalArmorItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.sound.SoundEvent;
@@ -37,17 +37,11 @@ public abstract class SkeletonHorseMixin extends AbstractHorseEntity {
     public void onInventoryChanged(Inventory sender) {
         super.onInventoryChanged(sender);
         if(!this.isBaby()) {
-            ItemStack armorStack = this.items.getStack(1);
-            if (armorStack == ItemStack.EMPTY) {
-                SkeletonHorseMixin.this.equipStack(EquipmentSlot.LEGS, ItemStack.EMPTY);
-            }
+            ItemStack armorStack = this.getBodyArmor();
             if (armorStack == null || !ArmorCheck.isHorseArmor(armorStack)) {
                 return;
             }
-            if (armorStack.getItem() instanceof HorseArmorItem) {
-                SkeletonHorseMixin.this.equipStack(EquipmentSlot.LEGS, armorStack);
-            }
-            this.getAttributeInstance(EntityAttributes.GENERIC_ARMOR).setBaseValue(((HorseArmorItem) armorStack.getItem()).getBonus());
+            this.getAttributeInstance(EntityAttributes.GENERIC_ARMOR).setBaseValue(((AnimalArmorItem) armorStack.getItem()).getProtection());
         }
     }
 
@@ -56,11 +50,11 @@ public abstract class SkeletonHorseMixin extends AbstractHorseEntity {
     public void interactMob(PlayerEntity player, Hand hand, CallbackInfoReturnable<ActionResult> cir) {
         if(!isBaby()) {
             if(this.getFirstPassenger() == null) {
-                if(player.getStackInHand(hand) != ItemStack.EMPTY && player.getStackInHand(hand).getItem() instanceof HorseArmorItem) {
+                if(player.getStackInHand(hand) != ItemStack.EMPTY && player.getStackInHand(hand).getItem() instanceof AnimalArmorItem) {
                     ItemStack handItem = player.getStackInHand(hand);
-                    ItemStack currentHorseArmor = this.items.getStack(1);
+                    ItemStack currentHorseArmor = this.getBodyArmor();
 
-                    this.items.setStack(1, handItem);
+                    this.equipBodyArmor(handItem);
                     this.onInventoryChanged(player.getInventory());
                     player.setStackInHand(hand, currentHorseArmor);
 
@@ -74,16 +68,16 @@ public abstract class SkeletonHorseMixin extends AbstractHorseEntity {
     @Inject(at = @At("RETURN"), method = "writeCustomDataToNbt")
     public void saveArmor(NbtCompound nbt, CallbackInfo ci) {
         if(this.items.getStack(1) != ItemStack.EMPTY) {
-            nbt.put("Armor", items.getStack(1).writeNbt(new NbtCompound()));
+            nbt.put("Armor", items.getStack(1).encode(this.getRegistryManager()));
         }
     }
     @Unique
     @Inject(at = @At("RETURN"), method = "readCustomDataFromNbt")
     public void readArmor(NbtCompound nbt, CallbackInfo ci) {
         if (nbt.contains("Armor", 10)) {
-            ItemStack itemStack = ItemStack.fromNbt(nbt.getCompound("Armor"));
+            ItemStack itemStack = (ItemStack)ItemStack.fromNbt(this.getRegistryManager(), nbt.getCompound("Armor")).orElse(ItemStack.EMPTY);
             if (!itemStack.isEmpty() && this.isHorseArmor(itemStack)) {
-                this.getAttributeInstance(EntityAttributes.GENERIC_ARMOR).setBaseValue(((HorseArmorItem)itemStack.getItem()).getBonus());
+                this.getAttributeInstance(EntityAttributes.GENERIC_ARMOR).setBaseValue(((AnimalArmorItem)itemStack.getItem()).getProtection());
                 this.equipStack(EquipmentSlot.LEGS, itemStack);
                 this.items.setStack(1, itemStack);
             }
@@ -99,6 +93,11 @@ public abstract class SkeletonHorseMixin extends AbstractHorseEntity {
     @Override
     public boolean canBeSaddled() {
         return !isBaby();
+    }
+
+    @Override
+    public boolean isTame() {
+        return true;
     }
 
     @Override
