@@ -10,12 +10,11 @@ import net.minecraft.client.render.entity.feature.FeatureRendererContext;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.render.entity.model.HorseEntityModel;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.component.type.DyedColorComponent;
+import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.mob.SkeletonHorseEntity;
-import net.minecraft.item.AnimalArmorItem;
+import net.minecraft.item.DyeableHorseArmorItem;
+import net.minecraft.item.HorseArmorItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.registry.tag.ItemTags;
-import net.minecraft.util.math.ColorHelper;
 
 public class SkeletonHorseArmorFeatureRenderer extends FeatureRenderer<SkeletonHorseEntity, HorseEntityModel<SkeletonHorseEntity>> {
     private final HorseEntityModel<SkeletonHorseEntity> armorModel;
@@ -27,22 +26,22 @@ public class SkeletonHorseArmorFeatureRenderer extends FeatureRenderer<SkeletonH
 
     @Override
     public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int i, SkeletonHorseEntity entity, float f, float g, float h, float j, float k, float l) {
-        ItemStack itemStack = entity.getBodyArmor();
+        ItemStack itemStack = entity.getEquippedStack(EquipmentSlot.LEGS);
         if(itemStack == null) {
             return;
         }
-        if (itemStack.getItem() instanceof AnimalArmorItem horseArmorItem) {
+        if (itemStack.getItem() instanceof HorseArmorItem horseArmorItem) {
             this.getContextModel().copyStateTo(this.armorModel);
             this.armorModel.animateModel(entity, f, g, h);
             this.armorModel.setAngles(entity, f, g, j, k, l);
             float n;
             float o;
             float p;
-            if (itemStack.isIn(ItemTags.DYEABLE)) {
-                int m = DyedColorComponent.getColor(itemStack, -6265536);
-                n = (float) ColorHelper.Argb.getRed(m) / 255.0F;
-                o = (float) ColorHelper.Argb.getGreen(m) / 255.0F;
-                p = (float) ColorHelper.Argb.getBlue(m) / 255.0F;
+            if (horseArmorItem instanceof DyeableHorseArmorItem) {
+                int m = ((DyeableHorseArmorItem)horseArmorItem).getColor(itemStack);
+                n = (float)(m >> 16 & 255) / 255.0F;
+                o = (float)(m >> 8 & 255) / 255.0F;
+                p = (float)(m & 255) / 255.0F;
             } else {
                 n = 1.0F;
                 o = 1.0F;
