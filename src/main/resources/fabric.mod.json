@@ -8,7 +8,7 @@
 		"Vipryx"
 	],
 	"contact": {
-		"homepage": "https://fabricmc.net/",
+		"homepage": "https://modrinth.com/mod/armorable-skeleton-horses",
 		"sources": "https://github.com/VipCoder8/ArmorableSkeletonHorses"
 	},
 	"license": "ARR",
@@ -24,7 +24,7 @@
 	],
 	"depends": {
 		"fabricloader": ">=0.16.10",
-		"minecraft": "~1.20.3",
+		"minecraft": ">=1.20",
 		"fabric-api": ">=0.91.1"
 	}
 }
