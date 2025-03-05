@@ -102,6 +102,11 @@ public abstract class SkeletonHorseMixin extends AbstractHorseEntity {
     }
 
     @Override
+    public boolean isTame() {
+        return true;
+    }
+
+    @Override
     public boolean cannotBeSilenced() {
         return super.cannotBeSilenced();
     }
