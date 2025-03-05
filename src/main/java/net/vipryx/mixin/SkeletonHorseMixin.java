@@ -1,6 +1,5 @@
 package net.vipryx.mixin;
 
-import net.fabricmc.fabric.api.attachment.v1.AttachmentType;
 import net.minecraft.entity.EntityType;
 import net.minecraft.entity.EquipmentSlot;
 import net.minecraft.entity.LivingEntity;
@@ -11,7 +10,6 @@ import net.minecraft.entity.player.PlayerEntity;
 import net.minecraft.inventory.Inventory;
 import net.minecraft.item.HorseArmorItem;
 import net.minecraft.item.ItemStack;
-import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
 import net.minecraft.sound.SoundEvent;
 import net.minecraft.util.ActionResult;
@@ -26,9 +24,6 @@ import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
-
-import java.util.function.Supplier;
-import java.util.function.UnaryOperator;
 
 @Mixin(SkeletonHorseEntity.class)
 public abstract class SkeletonHorseMixin extends AbstractHorseEntity {
@@ -114,61 +109,6 @@ public abstract class SkeletonHorseMixin extends AbstractHorseEntity {
     @Override
     public @Nullable LivingEntity getOwner() {
         return super.getOwner();
-    }
-
-    @Override
-    public <A> @Nullable A getAttached(AttachmentType<A> type) {
-        return super.getAttached(type);
-    }
-
-    @Override
-    public <A> A getAttachedOrThrow(AttachmentType<A> type) {
-        return super.getAttachedOrThrow(type);
-    }
-
-    @Override
-    public <A> A getAttachedOrSet(AttachmentType<A> type, A defaultValue) {
-        return super.getAttachedOrSet(type, defaultValue);
-    }
-
-    @Override
-    public <A> A getAttachedOrCreate(AttachmentType<A> type, Supplier<A> initializer) {
-        return super.getAttachedOrCreate(type, initializer);
-    }
-
-    @Override
-    public <A> A getAttachedOrCreate(AttachmentType<A> type) {
-        return super.getAttachedOrCreate(type);
-    }
-
-    @Override
-    public <A> A getAttachedOrElse(AttachmentType<A> type, @Nullable A defaultValue) {
-        return super.getAttachedOrElse(type, defaultValue);
-    }
-
-    @Override
-    public <A> A getAttachedOrGet(AttachmentType<A> type, Supplier<A> defaultValue) {
-        return super.getAttachedOrGet(type, defaultValue);
-    }
-
-    @Override
-    public <A> @Nullable A setAttached(AttachmentType<A> type, @Nullable A value) {
-        return super.setAttached(type, value);
-    }
-
-    @Override
-    public boolean hasAttached(AttachmentType<?> type) {
-        return super.hasAttached(type);
-    }
-
-    @Override
-    public <A> @Nullable A removeAttached(AttachmentType<A> type) {
-        return super.removeAttached(type);
-    }
-
-    @Override
-    public <A> @Nullable A modifyAttached(AttachmentType<A> type, UnaryOperator<A> modifier) {
-        return super.modifyAttached(type, modifier);
     }
 
     @Override
