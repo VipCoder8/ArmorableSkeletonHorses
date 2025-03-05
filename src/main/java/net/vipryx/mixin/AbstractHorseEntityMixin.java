@@ -1,6 +1,5 @@
 package net.vipryx.mixin;
 
-import net.minecraft.entity.mob.MobEntity;
 import net.minecraft.entity.passive.AbstractHorseEntity;
 import net.minecraft.item.ItemStack;
 import net.vipryx.ArmorCheck;
