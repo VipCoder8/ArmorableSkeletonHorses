@@ -80,7 +80,7 @@ public abstract class SkeletonHorseMixin extends AbstractHorseEntity {
     @Inject(at = @At("RETURN"), method = "readCustomDataFromNbt")
     public void readArmor(NbtCompound nbt, CallbackInfo ci) {
         if (nbt.contains("Armor", 10)) {
-            ItemStack itemStack = ItemStack.fromNbt(this.getRegistryManager(), nbt.getCompound("Armor")).orElse(ItemStack.EMPTY);
+            ItemStack itemStack = ItemStack.fromNbt(nbt.getCompound("Armor"));
             if (!itemStack.isEmpty() && this.isHorseArmor(itemStack)) {
                 this.getAttributeInstance(EntityAttributes.GENERIC_ARMOR).setBaseValue(((HorseArmorItem)itemStack.getItem()).getBonus());
                 this.equipStack(EquipmentSlot.LEGS, itemStack);
