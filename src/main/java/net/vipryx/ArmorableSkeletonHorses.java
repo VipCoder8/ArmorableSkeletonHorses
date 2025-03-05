@@ -14,13 +14,5 @@ public class ArmorableSkeletonHorses implements ClientModInitializer {
 	public void onInitializeClient() {
 		EntityRendererRegistry.register(EntityType.SKELETON_HORSE, (EntityRendererFactory.Context ctx) ->
 				new SkeletonHorseArmorRenderer(ctx, ctx.getModelLoader(), 1.1f));
-		ServerLivingEntityEvents.ALLOW_DAMAGE.register((entity, damageSource, amount) -> {
-			if (entity instanceof SkeletonHorseEntity) {
-				if (damageSource.getType().effects() == DamageEffects.BURNING) {
-					return false;
-				}
-			}
-			return true;
-		});
 	}
 }
