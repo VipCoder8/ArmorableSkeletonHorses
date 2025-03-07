@@ -1,50 +1,41 @@
 package net.vipryx.renderers;
 
 import net.minecraft.client.MinecraftClient;
-import net.minecraft.client.render.OverlayTexture;
-import net.minecraft.client.render.RenderLayer;
-import net.minecraft.client.render.VertexConsumer;
 import net.minecraft.client.render.VertexConsumerProvider;
+import net.minecraft.client.render.entity.equipment.EquipmentRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
+import net.minecraft.client.render.entity.feature.HorseArmorFeatureRenderer;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
+import net.minecraft.client.render.entity.model.EntityModelLoader;
 import net.minecraft.client.render.entity.model.HorseEntityModel;
+import net.minecraft.client.render.entity.state.HorseEntityRenderState;
 import net.minecraft.client.util.math.MatrixStack;
-import net.minecraft.component.type.DyedColorComponent;
-import net.minecraft.entity.mob.SkeletonHorseEntity;
-import net.minecraft.item.AnimalArmorItem;
-import net.minecraft.item.Item;
+import net.minecraft.component.DataComponentTypes;
+import net.minecraft.component.type.EquippableComponent;
 import net.minecraft.item.ItemStack;
-import net.minecraft.registry.tag.ItemTags;
-import net.minecraft.util.math.ColorHelper;
+import net.minecraft.item.equipment.EquipmentModel;
+import net.minecraft.util.Identifier;
 
-public class SkeletonHorseArmorFeatureRenderer extends FeatureRenderer<SkeletonHorseEntity, HorseEntityModel<SkeletonHorseEntity>> {
-    private final HorseEntityModel<SkeletonHorseEntity> armorModel;
+public class SkeletonHorseArmorFeatureRenderer extends FeatureRenderer<HorseEntityRenderState, HorseEntityModel> {
+    private final HorseEntityModel armorModel;
+    private final EquipmentRenderer equipmentRenderer;
 
-    public SkeletonHorseArmorFeatureRenderer(FeatureRendererContext<SkeletonHorseEntity, HorseEntityModel<SkeletonHorseEntity>> context) {
+    public SkeletonHorseArmorFeatureRenderer(FeatureRendererContext<HorseEntityRenderState, HorseEntityModel> context, EntityModelLoader loader, EquipmentRenderer equipmentRenderer) {
         super(context);
-        this.armorModel = new HorseEntityModel<>(MinecraftClient.getInstance().getEntityModelLoader().getModelPart(EntityModelLayers.HORSE_ARMOR));
+        this.equipmentRenderer = equipmentRenderer;
+        this.armorModel = new HorseEntityModel(loader.getModelPart(EntityModelLayers.HORSE_ARMOR));
     }
 
     @Override
-    public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int i, SkeletonHorseEntity horseEntity, float f, float g, float h, float j, float k, float l) {
-        ItemStack itemStack = horseEntity.getBodyArmor();
-        Item var13 = itemStack.getItem();
-        if (var13 instanceof AnimalArmorItem animalArmorItem) {
-            if (animalArmorItem.getType() == AnimalArmorItem.Type.EQUESTRIAN) {
-                this.getContextModel().copyStateTo(this.armorModel);
-                this.armorModel.animateModel(horseEntity, f, g, h);
-                this.armorModel.setAngles(horseEntity, f, g, j, k, l);
-                int m;
-                if (itemStack.isIn(ItemTags.DYEABLE)) {
-                    m = ColorHelper.Argb.fullAlpha(DyedColorComponent.getColor(itemStack, -6265536));
-                } else {
-                    m = -1;
-                }
-                VertexConsumer vertexConsumer = vertexConsumers.getBuffer(RenderLayer.getEntityCutoutNoCull(animalArmorItem.getEntityTexture()));
-                this.armorModel.render(matrices, vertexConsumer, i, OverlayTexture.DEFAULT_UV, m);
-                return;
-            }
+    public void render(MatrixStack matrices, VertexConsumerProvider vertexConsumers, int light, HorseEntityRenderState state, float limbAngle, float limbDistance) {
+        ItemStack itemStack = state.armor;
+        EquippableComponent equippableComponent = itemStack.get(DataComponentTypes.EQUIPPABLE);
+        if (equippableComponent != null && !equippableComponent.model().isEmpty()) {
+            HorseEntityModel horseEntityModel = this.armorModel;
+            Identifier identifier = equippableComponent.model().get();
+            horseEntityModel.setAngles(state);
+            this.equipmentRenderer.render(EquipmentModel.LayerType.HORSE_BODY, identifier, horseEntityModel, itemStack, matrices, vertexConsumers, light);
         }
     }
 }

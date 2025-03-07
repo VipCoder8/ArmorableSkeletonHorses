@@ -7,7 +7,6 @@ import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.mob.SkeletonHorseEntity;
 import net.minecraft.entity.passive.AbstractHorseEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.inventory.Inventory;
 import net.minecraft.item.AnimalArmorItem;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.NbtCompound;
@@ -16,6 +15,7 @@ import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.world.World;
 import net.vipryx.ArmorCheck;
+import net.vipryx.ArmorDefense;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
 import org.spongepowered.asm.mixin.Shadow;
@@ -40,7 +40,7 @@ public abstract class SkeletonHorseMixin extends AbstractHorseEntity {
             if (armorStack == null || !ArmorCheck.isHorseArmor(armorStack)) {
                 return;
             }
-            this.getAttributeInstance(EntityAttributes.GENERIC_ARMOR).setBaseValue(((AnimalArmorItem) armorStack.getItem()).getProtection());
+            this.getAttributeInstance(EntityAttributes.ARMOR).setBaseValue(ArmorDefense.getArmorItemDefense(armorStack));
         }
     }
 
@@ -67,16 +67,16 @@ public abstract class SkeletonHorseMixin extends AbstractHorseEntity {
     @Inject(at = @At("RETURN"), method = "writeCustomDataToNbt")
     public void saveArmor(NbtCompound nbt, CallbackInfo ci) {
         if(this.items.getStack(1) != ItemStack.EMPTY) {
-            nbt.put("Armor", items.getStack(1).encode(this.getRegistryManager()));
+            nbt.put("Armor", items.getStack(1).toNbt(this.getRegistryManager()));
         }
     }
     @Unique
     @Inject(at = @At("RETURN"), method = "readCustomDataFromNbt")
     public void readArmor(NbtCompound nbt, CallbackInfo ci) {
         if (nbt.contains("Armor", 10)) {
-            ItemStack itemStack = (ItemStack)ItemStack.fromNbt(this.getRegistryManager(), nbt.getCompound("Armor")).orElse(ItemStack.EMPTY);
-            if (!itemStack.isEmpty() && this.isHorseArmor(itemStack)) {
-                this.getAttributeInstance(EntityAttributes.GENERIC_ARMOR).setBaseValue(((AnimalArmorItem)itemStack.getItem()).getProtection());
+            ItemStack itemStack = ItemStack.fromNbt(this.getRegistryManager(), nbt.getCompound("Armor")).orElse(ItemStack.EMPTY);
+            if (!itemStack.isEmpty() && itemStack.getItem() instanceof AnimalArmorItem) {
+                this.getAttributeInstance(EntityAttributes.ARMOR).setBaseValue(ArmorDefense.getArmorItemDefense(itemStack));
                 this.equipStack(EquipmentSlot.LEGS, itemStack);
                 this.items.setStack(1, itemStack);
             }
@@ -97,11 +97,6 @@ public abstract class SkeletonHorseMixin extends AbstractHorseEntity {
     @Override
     public boolean isTame() {
         return true;
-    }
-
-    @Override
-    public boolean cannotBeSilenced() {
-        return super.cannotBeSilenced();
     }
 
     @Override
