@@ -17,7 +17,7 @@ public class SkeletonHorseArmorRenderer extends AbstractHorseEntityRenderer<Skel
 
     @Override
     public Identifier getTexture(SkeletonHorseEntity entity) {
-        return new Identifier("textures/entity/horse/horse_skeleton.png");
+        return Identifier.ofVanilla("textures/entity/horse/horse_skeleton.png");
     }
 }
 

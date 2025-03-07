@@ -32,10 +32,9 @@ public abstract class SkeletonHorseMixin extends AbstractHorseEntity {
     protected SkeletonHorseMixin(EntityType<? extends AbstractHorseEntity> entityType, World world) {
         super(entityType, world);
     }
-
     @Override
-    public void onInventoryChanged(Inventory sender) {
-        super.onInventoryChanged(sender);
+    public void onEquipStack(EquipmentSlot slot, ItemStack oldStack, ItemStack newStack) {
+        super.onEquipStack(slot, oldStack, newStack);
         if(!this.isBaby()) {
             ItemStack armorStack = this.getBodyArmor();
             if (armorStack == null || !ArmorCheck.isHorseArmor(armorStack)) {
@@ -85,11 +84,11 @@ public abstract class SkeletonHorseMixin extends AbstractHorseEntity {
     }
 
     @Override
-    public boolean hasArmorSlot() {
-        return true;
+    public boolean canUseSlot(EquipmentSlot slot) {
+        return slot == EquipmentSlot.BODY;
     }
 
-//Unused implemented methods.
+    //Unused implemented methods.
     @Override
     public boolean canBeSaddled() {
         return !isBaby();
