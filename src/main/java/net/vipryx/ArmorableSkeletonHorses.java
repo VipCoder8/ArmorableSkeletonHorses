@@ -10,6 +10,6 @@ public class ArmorableSkeletonHorses implements ClientModInitializer {
 	@Override
 	public void onInitializeClient() {
 		EntityRendererRegistry.register(EntityType.SKELETON_HORSE, (EntityRendererFactory.Context ctx) ->
-				new SkeletonHorseArmorRenderer(ctx, ctx.getModelLoader(), 1.1f));
+				new SkeletonHorseArmorRenderer(ctx, ctx.getEntityModels()));
 	}
 }
