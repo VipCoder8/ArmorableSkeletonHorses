@@ -7,10 +7,13 @@ import net.minecraft.entity.attribute.EntityAttributes;
 import net.minecraft.entity.mob.SkeletonHorseEntity;
 import net.minecraft.entity.passive.AbstractHorseEntity;
 import net.minecraft.entity.player.PlayerEntity;
-import net.minecraft.item.AnimalArmorItem;
 import net.minecraft.item.ItemStack;
+import net.minecraft.item.Items;
 import net.minecraft.nbt.NbtCompound;
-import net.minecraft.sound.SoundEvent;
+import net.minecraft.screen.HorseScreenHandler;
+import net.minecraft.screen.ScreenHandler;
+import net.minecraft.screen.ScreenHandlerListener;
+import net.minecraft.screen.slot.Slot;
 import net.minecraft.util.ActionResult;
 import net.minecraft.util.Hand;
 import net.minecraft.world.World;
@@ -18,7 +21,6 @@ import net.vipryx.ArmorCheck;
 import net.vipryx.ArmorDefense;
 import org.jetbrains.annotations.Nullable;
 import org.spongepowered.asm.mixin.Mixin;
-import org.spongepowered.asm.mixin.Shadow;
 import org.spongepowered.asm.mixin.Unique;
 import org.spongepowered.asm.mixin.injection.At;
 import org.spongepowered.asm.mixin.injection.Inject;
@@ -27,17 +29,17 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 
 @Mixin(SkeletonHorseEntity.class)
 public abstract class SkeletonHorseMixin extends AbstractHorseEntity {
-    @Shadow protected abstract void playJumpSound();
 
     protected SkeletonHorseMixin(EntityType<? extends AbstractHorseEntity> entityType, World world) {
         super(entityType, world);
     }
+
     @Override
     public void onEquipStack(EquipmentSlot slot, ItemStack oldStack, ItemStack newStack) {
         super.onEquipStack(slot, oldStack, newStack);
         if(!this.isBaby()) {
             ItemStack armorStack = this.getBodyArmor();
-            if (armorStack == null || !ArmorCheck.isHorseArmor(armorStack)) {
+            if (armorStack == null || !ArmorCheck.isHorseArmor(armorStack.getItem())) {
                 return;
             }
             this.getAttributeInstance(EntityAttributes.ARMOR).setBaseValue(ArmorDefense.getArmorItemDefense(armorStack));
@@ -47,14 +49,14 @@ public abstract class SkeletonHorseMixin extends AbstractHorseEntity {
     @Unique
     @Inject(at = @At("HEAD"), method = "interactMob", cancellable = true)
     public void interactMob(PlayerEntity player, Hand hand, CallbackInfoReturnable<ActionResult> cir) {
+        System.out.println(this.canEquip(Items.SADDLE.getDefaultStack(), EquipmentSlot.SADDLE));
         if(!isBaby()) {
             if(this.getFirstPassenger() == null) {
-                if(player.getStackInHand(hand) != ItemStack.EMPTY && player.getStackInHand(hand).getItem() instanceof AnimalArmorItem) {
+                if(player.getStackInHand(hand) != ItemStack.EMPTY && ArmorCheck.isHorseArmor(player.getStackInHand(hand).getItem())) {
                     ItemStack handItem = player.getStackInHand(hand);
                     ItemStack currentHorseArmor = this.getBodyArmor();
 
                     this.equipBodyArmor(handItem);
-                    this.onInventoryChanged(player.getInventory());
                     player.setStackInHand(hand, currentHorseArmor);
 
                     cir.setReturnValue(ActionResult.SUCCESS);
@@ -73,11 +75,11 @@ public abstract class SkeletonHorseMixin extends AbstractHorseEntity {
     @Unique
     @Inject(at = @At("RETURN"), method = "readCustomDataFromNbt")
     public void readArmor(NbtCompound nbt, CallbackInfo ci) {
-        if (nbt.contains("Armor", 10)) {
-            ItemStack itemStack = ItemStack.fromNbt(this.getRegistryManager(), nbt.getCompound("Armor")).orElse(ItemStack.EMPTY);
-            if (!itemStack.isEmpty() && itemStack.getItem() instanceof AnimalArmorItem) {
+        if (nbt.contains("Armor")) {
+            ItemStack itemStack = ItemStack.fromNbt(this.getRegistryManager(), nbt.get("Armor")).orElse(ItemStack.EMPTY);
+            if (!itemStack.isEmpty() && ArmorCheck.isHorseArmor(itemStack.getItem())) {
                 this.getAttributeInstance(EntityAttributes.ARMOR).setBaseValue(ArmorDefense.getArmorItemDefense(itemStack));
-                this.equipStack(EquipmentSlot.LEGS, itemStack);
+                this.equipStack(EquipmentSlot.BODY, itemStack);
                 this.items.setStack(1, itemStack);
             }
         }
@@ -85,15 +87,10 @@ public abstract class SkeletonHorseMixin extends AbstractHorseEntity {
 
     @Override
     public boolean canUseSlot(EquipmentSlot slot) {
-        return slot == EquipmentSlot.BODY;
+        return slot == EquipmentSlot.SADDLE || slot == EquipmentSlot.BODY;
     }
 
     //Unused implemented methods.
-    @Override
-    public boolean canBeSaddled() {
-        return !isBaby();
-    }
-
     @Override
     public boolean isTame() {
         return true;
@@ -107,10 +104,5 @@ public abstract class SkeletonHorseMixin extends AbstractHorseEntity {
     @Override
     public int getJumpCooldown() {
         return super.getJumpCooldown();
-    }
-
-    @Override
-    public SoundEvent getSaddleSound() {
-        return super.getSaddleSound();
     }
 }

@@ -17,6 +17,9 @@
 	"entrypoints": {
 		"client": [
 			"net.vipryx.ArmorableSkeletonHorses"
+		],
+		"fabric-datagen": [
+			"net.vipryx.ArmorableSkeletonHorses"
 		]
 	},
 	"mixins": [
@@ -24,7 +27,7 @@
 	],
 	"depends": {
 		"fabricloader": ">=0.16.10",
-		"minecraft": "=1.21.4",
+		"minecraft": "=1.21.5",
 		"fabric-api": "*"
 	}
 }

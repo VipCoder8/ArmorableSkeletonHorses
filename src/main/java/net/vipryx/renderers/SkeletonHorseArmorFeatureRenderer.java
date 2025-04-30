@@ -5,7 +5,6 @@ import net.minecraft.client.render.entity.equipment.EquipmentModel;
 import net.minecraft.client.render.entity.equipment.EquipmentRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRenderer;
 import net.minecraft.client.render.entity.feature.FeatureRendererContext;
-import net.minecraft.client.render.entity.feature.HorseArmorFeatureRenderer;
 import net.minecraft.client.render.entity.model.EntityModelLayers;
 import net.minecraft.client.render.entity.model.HorseEntityModel;
 import net.minecraft.client.render.entity.model.LoadedEntityModels;
@@ -33,7 +32,7 @@ public class SkeletonHorseArmorFeatureRenderer extends FeatureRenderer<HorseEnti
         if (equippableComponent != null && equippableComponent.assetId().isPresent()) {
             HorseEntityModel horseEntityModel = this.armorModel;
             horseEntityModel.setAngles(state);
-            this.equipmentRenderer.render(EquipmentModel.LayerType.HORSE_BODY, (RegistryKey)equippableComponent.assetId().get(), horseEntityModel, itemStack, matrices, vertexConsumers, light);
+            this.equipmentRenderer.render(EquipmentModel.LayerType.HORSE_BODY, equippableComponent.assetId().get(), horseEntityModel, itemStack, matrices, vertexConsumers, light);
         }
     }
 }
