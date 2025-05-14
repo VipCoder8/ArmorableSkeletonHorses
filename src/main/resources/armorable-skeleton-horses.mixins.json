@@ -4,11 +4,13 @@
   "compatibilityLevel": "JAVA_17",
   "mixins": [
     "AbstractHorseEntityMixin",
-    "SkeletonHorseMixin"
+    "SkeletonHorseMixin",
+    "WitherSkeletonHorseMixin"
   ],
   "injectors": {
     "defaultRequire": 1
   },
   "client": [
+    "WitherSkeletonHorseEntityRendererMixin"
   ]
 }
