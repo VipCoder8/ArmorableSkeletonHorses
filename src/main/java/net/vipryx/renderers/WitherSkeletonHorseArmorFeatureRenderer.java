@@ -23,7 +23,7 @@ public class WitherSkeletonHorseArmorFeatureRenderer extends FeatureRenderer<Wit
 
     public WitherSkeletonHorseArmorFeatureRenderer(FeatureRendererContext<WitherSkeletonHorse, HorseEntityModel<WitherSkeletonHorse>> context) {
         super(context);
-        this.armorModel = new HorseEntityModel<>(MinecraftClient.getInstance().getEntityModelLoader().getModelPart(EntityModelLayers.HORSE_ARMOR));
+        this.armorModel = new HorseEntityModel<>(MinecraftClient.getInstance().getEntityModelLoader().getModelPart(EntityModelLayers.SKELETON_HORSE));
     }
 
     @Override

@@ -21,6 +21,7 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfo;
 
 @Mixin(WitherSkeletonHorseRenderer.class)
 public class WitherSkeletonHorseEntityRendererMixin extends ZombieHorseEntityRenderer {
+
     @Shadow @Final private static Identifier WITHER_SKELETON_HORSE_LOCATION;
 
     public WitherSkeletonHorseEntityRendererMixin(EntityRendererFactory.Context ctx) {
@@ -32,7 +33,7 @@ public class WitherSkeletonHorseEntityRendererMixin extends ZombieHorseEntityRen
         this.addFeature((FeatureRenderer<AbstractHorseEntity, HorseEntityModel<AbstractHorseEntity>>)(Object) new WitherSkeletonHorseArmorFeatureRenderer(new FeatureRendererContext<>() {
             @Override
             public HorseEntityModel<WitherSkeletonHorse> getModel() {
-                HorseEntityModel<WitherSkeletonHorse> horseModel = new HorseEntityModel<>(MinecraftClient.getInstance().getEntityModelLoader().getModelPart(EntityModelLayers.HORSE_ARMOR));
+                HorseEntityModel<WitherSkeletonHorse> horseModel = new HorseEntityModel<>(MinecraftClient.getInstance().getEntityModelLoader().getModelPart(EntityModelLayers.SKELETON_HORSE));
                 horseModel.child = false;
                 return horseModel;
             }

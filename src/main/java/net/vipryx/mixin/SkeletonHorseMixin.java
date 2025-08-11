@@ -60,7 +60,9 @@ public abstract class SkeletonHorseMixin extends AbstractHorseEntity {
 
                     this.items.setStack(1, handItem);
                     this.onInventoryChanged(player.getInventory());
-                    player.setStackInHand(hand, currentHorseArmor);
+                    if(currentHorseArmor != ItemStack.EMPTY && player.isCreative()) {
+                        player.setStackInHand(hand, currentHorseArmor);
+                    }
 
                     cir.setReturnValue(ActionResult.SUCCESS);
                 }

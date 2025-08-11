@@ -11,7 +11,7 @@ import net.minecraft.util.Identifier;
 public class SkeletonHorseArmorRenderer extends AbstractHorseEntityRenderer<SkeletonHorseEntity, HorseEntityModel<SkeletonHorseEntity>> {
 
     public SkeletonHorseArmorRenderer(EntityRendererFactory.Context ctx, EntityModelLoader loader, float scale) {
-        super(ctx, new HorseEntityModel<>(loader.getModelPart(EntityModelLayers.HORSE_ARMOR)), scale);
+        super(ctx, new HorseEntityModel<>(loader.getModelPart(EntityModelLayers.SKELETON_HORSE)), scale);
         this.addFeature(new SkeletonHorseArmorFeatureRenderer(this));
     }
 
