@@ -56,15 +56,13 @@ public abstract class SkeletonHorseMixin extends AbstractHorseEntity {
             if(this.getFirstPassenger() == null) {
                 if(player.getStackInHand(hand) != ItemStack.EMPTY && player.getStackInHand(hand).getItem() instanceof HorseArmorItem) {
                     ItemStack handItem = player.getStackInHand(hand);
-                    ItemStack currentHorseArmor = this.items.getStack(1);
 
-                    this.items.setStack(1, handItem);
-                    this.onInventoryChanged(player.getInventory());
-                    if(currentHorseArmor != ItemStack.EMPTY && player.isCreative()) {
-                        player.setStackInHand(hand, currentHorseArmor);
+                    if(this.getEquippedStack(EquipmentSlot.LEGS) == ItemStack.EMPTY) {
+                        this.items.setStack(1, handItem);
+                        this.onInventoryChanged(player.getInventory());
+                    } else {
+                        cir.setReturnValue(ActionResult.PASS);
                     }
-
-                    cir.setReturnValue(ActionResult.SUCCESS);
                 }
             }
         }
