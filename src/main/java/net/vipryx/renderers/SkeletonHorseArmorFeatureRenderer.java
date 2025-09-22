@@ -23,7 +23,7 @@ public class SkeletonHorseArmorFeatureRenderer extends FeatureRenderer<SkeletonH
 
     public SkeletonHorseArmorFeatureRenderer(FeatureRendererContext<SkeletonHorseEntity, HorseEntityModel<SkeletonHorseEntity>> context) {
         super(context);
-        this.armorModel = new HorseEntityModel<>(MinecraftClient.getInstance().getEntityModelLoader().getModelPart(EntityModelLayers.HORSE_ARMOR));
+        this.armorModel = new HorseEntityModel<>(MinecraftClient.getInstance().getEntityModelLoader().getModelPart(EntityModelLayers.SKELETON_HORSE));
     }
 
     @Override
