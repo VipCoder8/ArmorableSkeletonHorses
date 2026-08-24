@@ -28,6 +28,8 @@ import org.spongepowered.asm.mixin.injection.callback.CallbackInfoReturnable;
 public abstract class SkeletonHorseMixin extends AbstractHorseEntity {
     @Shadow protected abstract void playJumpSound();
 
+    @Shadow protected abstract void playSwimSound(float volume);
+
     protected SkeletonHorseMixin(EntityType<? extends AbstractHorseEntity> entityType, World world) {
         super(entityType, world);
     }
@@ -36,10 +38,9 @@ public abstract class SkeletonHorseMixin extends AbstractHorseEntity {
         super.onEquipStack(slot, oldStack, newStack);
         if(!this.isBaby()) {
             ItemStack armorStack = this.getBodyArmor();
-            if (armorStack == null || !ArmorCheck.isHorseArmor(armorStack)) {
-                return;
+            if (armorStack != null && ArmorCheck.isHorseArmor(armorStack)) {
+                this.getAttributeInstance(EntityAttributes.GENERIC_ARMOR).setBaseValue(((AnimalArmorItem) armorStack.getItem()).getProtection());
             }
-            this.getAttributeInstance(EntityAttributes.GENERIC_ARMOR).setBaseValue(((AnimalArmorItem) armorStack.getItem()).getProtection());
         }
     }
 
@@ -53,8 +54,15 @@ public abstract class SkeletonHorseMixin extends AbstractHorseEntity {
                     ItemStack currentHorseArmor = this.getBodyArmor();
 
                     this.equipBodyArmor(handItem);
-                    this.onInventoryChanged(player.getInventory());
-                    player.setStackInHand(hand, currentHorseArmor);
+                    if(ItemStack.areEqual(handItem, currentHorseArmor)) {
+                        super.interactMob(player, hand);
+                    }
+                    if(!player.isInCreativeMode()) {
+                        player.setStackInHand(hand, currentHorseArmor);
+                    }
+                    if(player.isInCreativeMode() && !currentHorseArmor.isEmpty()) {
+                        player.setStackInHand(hand, currentHorseArmor);
+                    }
 
                     cir.setReturnValue(ActionResult.SUCCESS);
                 }
@@ -76,7 +84,7 @@ public abstract class SkeletonHorseMixin extends AbstractHorseEntity {
             ItemStack itemStack = (ItemStack)ItemStack.fromNbt(this.getRegistryManager(), nbt.getCompound("Armor")).orElse(ItemStack.EMPTY);
             if (!itemStack.isEmpty() && this.isHorseArmor(itemStack)) {
                 this.getAttributeInstance(EntityAttributes.GENERIC_ARMOR).setBaseValue(((AnimalArmorItem)itemStack.getItem()).getProtection());
-                this.equipStack(EquipmentSlot.LEGS, itemStack);
+                this.equipStack(EquipmentSlot.BODY, itemStack);
                 this.items.setStack(1, itemStack);
             }
         }
